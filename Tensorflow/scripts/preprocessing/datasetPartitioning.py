@@ -124,8 +124,6 @@ def verifyPartitioning(dest, imgFileExt):
 if __name__ == '__main__':
     imgSourcePath = r"Datasets/UAVHighRiseBuildingsKorea/DataAugmented/Images"
     lblSourcePath = r"Datasets/UAVHighRiseBuildingsKorea/DataAugmented/Labels"
-    destTest = r"Tensorflow/workspace/images/Test"
-    destTrain = r"Tensorflow/workspace/images/Train"
     destPath = r"Tensorflow/workspace/images"
     ratio = 0.1
     fileNamesTest = []
