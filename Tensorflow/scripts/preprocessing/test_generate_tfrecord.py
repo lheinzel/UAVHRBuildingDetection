@@ -2,8 +2,8 @@ import subprocess
 
 # Paths for Test partition
 xmldirTest = r"Tensorflow/workspace/images/test"
-labelsPathTest = r"Tensorflow/workspace/training_Demo/annotations/labelmap.pbtxt"
-outputPathTest = r"Tensorflow/workspace/training_Demo/annotations/test.record"
+labelsPathTest = r"Tensorflow/workspace/annotations/labelmap.pbtxt"
+outputPathTest = r"Tensorflow/workspace/annotations/test.record"
 imageDirTest = r"Tensorflow/workspace/images/test"
 
 # Create tfrecord for test patition
@@ -16,8 +16,8 @@ print(err)
 
 # Paths for Training partition
 xmldirTrain = r"Tensorflow/workspace/images/train"
-labelsPathTrain = r"Tensorflow/workspace/training_Demo/annotations/labelmap.pbtxt"
-outputPathTrain = r"Tensorflow/workspace/training_Demo/annotations/train.record"
+labelsPathTrain = r"Tensorflow/workspace/annotations/labelmap.pbtxt"
+outputPathTrain = r"Tensorflow/workspace/annotations/train.record"
 imageDirTrain = r"Tensorflow/workspace/images/train"
 
 # Create tfrecord for training partition
