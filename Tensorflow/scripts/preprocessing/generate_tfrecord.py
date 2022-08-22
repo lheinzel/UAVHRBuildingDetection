@@ -60,6 +60,12 @@ if args.image_dir is None:
     args.image_dir = args.xml_dir
 
 
+args.xml_dir = r"Tensorflow/workspace/images/test"
+args.labels_path = r"Tensorflow/workspace/training_Demo/annotations/labelmap.pbtxt"
+args.output_path = r"Tensorflow/workspace/training_Demo/annotations/test.record"
+args.image_dir = r"Tensorflow/workspace/images/test"
+
+
 label_map = label_map_util.load_labelmap(args.labels_path)
 label_map_dict = label_map_util.get_label_map_dict(label_map)
 

@@ -80,7 +80,7 @@ def partition(imgSource, labelSource, dest, ratio, imgFileExt):
 
     # Copy all image files according to partitioning into the target diectories, by iterating over the source directores. 
     # Save the names in the lists
-    print("Partitioning the labels...")
+    print("Partitioning the images...")
     iterateImageDir(imgSource, dest, imgFileExt, lFileNamesTrain, lFileNamesTest, ratio)
 
     # Copy the matching labels to the respective target directories of the partitions
