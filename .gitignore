@@ -1,5 +1,5 @@
 /.venv/*
 /Datasets/*
 /cocoapi/*
-/models/*
-/workspace/pretrained_models/*
+/Tensorflow/models/*
+
