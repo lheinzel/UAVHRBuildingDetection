@@ -7,7 +7,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-
 def readAnnotationData(lblPath):
     dfLblData = pd.read_csv(lblPath, sep=";")
     listAnnotation = dfLblData[['xmin' , 'ymin', 'xmax', 'ymax', 'class']].values.tolist()
@@ -76,15 +75,20 @@ def augmentData(imgDir, lblDir, targetDir, imgCrpDims, nAugments, vProb, imgFile
             # Save the transformed data
             saveAugmentedData(dataTrans, targetDir, el.name.split(".")[0])
 
-            
+            # Inplace replacement
+            if targetDir == imgDir:
+                os.remove(el.path)
+
+            if targetDir == lblDir:
+                os.remove(lblPath) 
 
 
 
 
 if __name__ == "__main__":
-    lblDir = r"DataCropped_320x320/Labels/Detection/Seoul_2018_2"
-    imgDir = r"DataCropped_320x320/Images/Detection/Seoul_2018_2"
-    targetDir = r"DataCropped_320x320/Augmentation"
+    lblDir = r"Tensorflow/workspace/images/Test"
+    imgDir = r"Tensorflow/workspace/images/Test"
+    targetDir = r"Tensorflow/workspace/images/Test"
     augmentData(imgDir, lblDir, targetDir, [320,320], 10, [0.5, 0.5, 0.25, 0.25], "png")
 
 
