@@ -5,8 +5,8 @@ import random as rnd
 
 
 def iterateImageDir(dirPath, destPath, imgFileExt, lFileNamesTrain, lFileNamesTest, ratio):
-    destPathTest = os.path.join(destPath, "Test")
-    destPathTrain = os.path.join(destPath, "Train")
+    destPathTest = os.path.join(destPath, "test")
+    destPathTrain = os.path.join(destPath, "train")
 
     # Get all elements in current dir
     dirElements = os.listdir(dirPath)
@@ -73,6 +73,12 @@ def copyLabelsForImages(lblDirPath, destTest, destTrain, lFileNamesTrain, lFileN
 def partition(imgSource, labelSource, dest, ratio, imgFileExt):
     destTest = os.path.join(dest, "test")
     destTrain = os.path.join(dest, "train")
+
+    if not os.path.exists(destTrain):
+        os.makedirs(destTest)
+
+    if not os.path.exists(destTrain):
+        os.makedirs(destTrain)
 
     # initialize lists of image files that have been copied
     lFileNamesTest = [];
