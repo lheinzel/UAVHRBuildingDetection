@@ -89,7 +89,7 @@ def saveAugmentedData(dataTransformed, targetDir, srcImageName):
         pass
 
         # Transform bbox dimensions to int
-        dfAnnotations.iloc[:, 0:4] = dfAnnotations.iloc[:, 4:].astype(int)
+        dfAnnotations[["xmin", "ymin", "xmax", "ymax"]] = dfAnnotations[["xmin", "ymin", "xmax", "ymax"]].astype(int)
 
         # Write Annotation data
         dfAnnotations.to_csv(os.path.join(targetDir, lblNameCur), sep=";", index=None)
