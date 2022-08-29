@@ -50,7 +50,7 @@ def saveAugmentedData(dataTransformed, targetDir, srcImageName):
         pass
 
         # Write Annotation data
-        dfAnnotations.to_csv(os.path.join(targetDir, lblNameCur), sep=";")
+        dfAnnotations.to_csv(os.path.join(targetDir, lblNameCur), sep=";", index=None)
 
         # Write image
         cv2.imwrite(os.path.join(targetDir, imgNameCur), dat["image"])
