@@ -53,17 +53,11 @@ def readAnnotationData(lblPath):
     return listAnnotation
 
 
-def transformData(oImage, lAnnotation, imgCrpDims, vProb, nAugments):
+def transformData(oAugmenter, oImage, lAnnotation, nAugments):
     dataTransformed = [];
 
     for i in range(nAugments):
-        bboxParams = alb.BboxParams(format='pascal_voc', min_visibility=0.75)
-        augmenter = alb.Compose([alb.RandomCrop(imgCrpDims[0],imgCrpDims[1]),
-                            alb.ColorJitter(hue=0.1, brightness=0.5, saturation=0.5, p=vProb[1]),
-                            alb.HorizontalFlip(p=vProb[2]),
-                            alb.VerticalFlip(p=vProb[3])], bboxParams)
-
-        dataTransCur = augmenter(image=oImage, bboxes=lAnnotation)
+        dataTransCur = oAugmenter(image=oImage, bboxes=lAnnotation)
         dataTransformed.append(dataTransCur)
 
     return dataTransformed
@@ -100,7 +94,7 @@ def saveAugmentedData(dataTransformed, targetDir, srcImageName):
 
 
 
-def augmentData(imgDir, lblDir, targetDir, imgCrpDims, nAugments, vProb, imgFileExt, bVisualize=False):
+def augmentData(oAugmenter, imgDir, lblDir, targetDir, nAugments, imgFileExt, bVisualize=False):
     for el in os.scandir(imgDir):
         if el.is_file() and el.name.split(".")[1] == imgFileExt:
             lblPath = os.path.join(lblDir, os.path.join(el.name.split(".")[0] + ".csv"))
@@ -110,7 +104,7 @@ def augmentData(imgDir, lblDir, targetDir, imgCrpDims, nAugments, vProb, imgFile
             lAnnotations = readAnnotationData(lblPath)
 
             # Transform the data
-            dataTrans = transformData(oImgCur, lAnnotations, imgCrpDims, vProb, nAugments)
+            dataTrans = transformData(oAugmenter, oImgCur, lAnnotations, nAugments)
 
             if bVisualize:
                 for dat in dataTrans:
@@ -135,7 +129,15 @@ if __name__ == "__main__":
     lblDir = r"Tensorflow/workspace/images/Test"
     imgDir = r"Tensorflow/workspace/images/Test"
     targetDir = r"Tensorflow/workspace/images/Test"
-    augmentData(imgDir, lblDir, targetDir, [320,320], 10, [0.5, 0.5, 0.25, 0.25], "png")
+    imgCrpDims = [320, 320]
+
+    bboxParams = alb.BboxParams(format='pascal_voc', min_visibility=0.75)
+    oAugmenter = alb.Compose([alb.RandomCrop(imgCrpDims[0],imgCrpDims[1]),
+                            alb.ColorJitter(hue=0.1, brightness=0.5, saturation=0.5, p=0.5),
+                            alb.HorizontalFlip(p=0.25),
+                            alb.VerticalFlip(p=0.25)], bboxParams)
+
+    augmentData(oAugmenter, imgDir, lblDir, targetDir, 10, "png")
 
 
 
