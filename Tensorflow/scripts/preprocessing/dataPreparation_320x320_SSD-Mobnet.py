@@ -4,6 +4,7 @@ import albumentations as alb
 from shutil import rmtree
 from shutil import copyfile
 import os
+import tarfile
 
 imgSource = r"Datasets/UAVHighRiseBuildingsKorea/DataCropped_320x320/Images";
 lblSource = r"Datasets/UAVHighRiseBuildingsKorea/DataCropped_320x320/Labels";
@@ -11,6 +12,7 @@ destPath = r"Tensorflow/workspace/images"
 annotationPath = r"Tensorflow/workspace/annotations"
 lblMapPath = r"Tensorflow/workspace/annotations/labelmap.pbtxt"
 lblMapSrcPath = r"Datasets/UAVHighRiseBuildingsKorea/labelmap.pbtxt"
+cmpAnnotationPath = r"Tensorflow/workspace/annotations.tar.gz"
 ratioTest = 0.2
 ratioValid = 0.2
 INPUT_DIMS = [320,320];
@@ -58,3 +60,8 @@ os.system("py Tensorflow/scripts/preprocessing/generate_tfrecord.py -x" + os.pat
 
 os.system("py Tensorflow/scripts/preprocessing/generate_tfrecord.py -x" + os.path.join(destPath,"valid") + " -l " +
           lblMapPath + " -o " + os.path.join(annotationPath,"valid.record") + " -i " + os.path.join(destPath, "valid"))
+
+# Compress anntotations directory to tar file
+if not os.path.exists(cmpAnnotationPath):
+  with tarfile.open(cmpAnnotationPath, "w:gz") as tar:
+    tar.add(annotationPath, arcname=os.path.basename(annotationPath))
