@@ -1,7 +1,9 @@
+from multiprocessing.sharedctypes import Value
 import time
 from shutil import rmtree
 import os
 from shutil import copyfile
+import tarfile
 
 def moveCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime):
     startTime = time.time()
@@ -80,14 +82,22 @@ def copyCheckpointFilesForIndex(ckptFileNames, ckptSrcPath, index, ckptTargetPat
     for f in ckptFilesCurrent:
         copyfile(os.path.join(ckptSrcPath,f), os.path.join(ckptTargetPath, f))
 
+def saveCheckpointDataToCloud(ckptPath, ckptTarPath):
+    if os.path.exists(ckptTarPath):
+        raise ValueError("Checkpoint data at " + ckptTarPath + " already exists!")
+    else:
+        with tarfile.open(ckptTarPath, "w:gz") as tar:
+            tar.add(ckptPath, arcname=os.path.basename(ckptPath))
+
 if __name__ == "__main__":
     modelPath = r"Tensorflow/workspace/training_SSD-MobnetV2_320x320_MoreAugments/models/HRDetection_MobNetV2";
     destPath = r"Tensorflow/workspace/training_SSD-MobnetV2_320x320_MoreAugments/models/HRDetection_MobNetV2/checkpoints"
     evalpath = r"Tensorflow/workspace/training_SSD-MobnetV2_320x320_MoreAugments/models/HRDetection_MobNetV2/eval"
     ckptBufferTarget = r"Tensorflow/workspace/training_SSD-MobnetV2_320x320_MoreAugments/models/HRDetection_MobNetV2/ckptBuffer"
+    ckptTartPath = r"Tensorflow/workspace/training_SSD-MobnetV2_320x320_MoreAugments/models/HRDetection_MobNetV2/checkpoints.tar.gz"
     lastCheckpoint = 21
     maxRunTime = 120
 
     #moveCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
-    copyCheckpontFilesForEvaluation(destPath, ckptBufferTarget, evalpath, 30)
-    
+    #copyCheckpontFilesForEvaluation(destPath, ckptBufferTarget, evalpath, 30)
+    saveCheckpointDataToCloud(destPath, ckptTartPath)
