@@ -19,9 +19,9 @@ def moveCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
         # Read names of all checkpoint related files
         dirContents = os.scandir(modelPath)
 
-        if dirContents:
-            ckptFilePaths = [el.path for el in dirContents if el.is_file() and el.name.split("-")[0] == "ckpt"] 
-            
+        ckptFilePaths = [el.path for el in dirContents if el.is_file() and el.name.split("-")[0] == "ckpt"] 
+
+        if ckptFilePaths:
             # Get number of latest checkpoint
             ckptNumbers = [int(os.path.split(el)[1].split(".")[0].split("-")[1]) for el in ckptFilePaths]
             latestCkptNum = max(ckptNumbers)
