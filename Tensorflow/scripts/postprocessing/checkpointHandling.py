@@ -5,7 +5,7 @@ import os
 from shutil import copyfile
 import tarfile
 
-def moveCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime):
+def copyCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime):
     startTime = time.time()
     
     # Clear existing checkpoints if present
@@ -29,12 +29,12 @@ def moveCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
             # Move over all checkpoint related files
             for ckptFile in ckptFilePaths:
                 ckptFileName = os.path.split(ckptFile)[1]
-                print("Moving file " + ckptFile)
-                os.rename(ckptFile,os.path.join(destPath, ckptFileName))
+                print("copying file " + ckptFile)
+                copyfile(ckptFile,os.path.join(destPath, ckptFileName))
 
             # Break if the last checkpoint has been moved
             if latestCkptNum >= lastCheckpoint:
-                print("Latest checkpoint moved. Quitting ...")
+                print("Latest checkpoint copied. Quitting ...")
                 break;
 
         # Update elabsed time
