@@ -6,6 +6,7 @@ from shutil import copyfile
 import tarfile
 
 def copyCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime):
+    print("... Start copyCheckpointFilesToFolder")
     startTime = time.time()
     
     # Clear existing checkpoints if present
