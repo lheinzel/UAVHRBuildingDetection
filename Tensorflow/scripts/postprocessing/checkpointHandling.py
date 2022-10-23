@@ -18,20 +18,22 @@ def moveCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
     while (elapsedTime-startTime < maxRunTime)/60:
         # Read names of all checkpoint related files
         dirContents = os.scandir(modelPath)
-        ckptFilePaths = [el.path for el in dirContents if el.is_file() and el.name.split("-")[0] == "ckpt"] 
-        
-        # Get number of latest checkpoint
-        ckptNumbers = [int(os.path.split(el)[1].split(".")[0].split("-")[1]) for el in ckptFilePaths]
-        latestCkptNum = max(ckptNumbers)
 
-        # Move over all checkpoint related files
-        for ckptFile in ckptFilePaths:
-            ckptFileName = os.path.split(ckptFile)[1]
-            os.rename(ckptFile,os.path.join(destPath, ckptFileName))
+        if dirContents:
+            ckptFilePaths = [el.path for el in dirContents if el.is_file() and el.name.split("-")[0] == "ckpt"] 
+            
+            # Get number of latest checkpoint
+            ckptNumbers = [int(os.path.split(el)[1].split(".")[0].split("-")[1]) for el in ckptFilePaths]
+            latestCkptNum = max(ckptNumbers)
 
-        # Break if the last checkpoint has been moved
-        if latestCkptNum >= lastCheckpoint:
-            break;
+            # Move over all checkpoint related files
+            for ckptFile in ckptFilePaths:
+                ckptFileName = os.path.split(ckptFile)[1]
+                os.rename(ckptFile,os.path.join(destPath, ckptFileName))
+
+            # Break if the last checkpoint has been moved
+            if latestCkptNum >= lastCheckpoint:
+                break;
 
         # Update elabsed time
         elapsedTime = time.time();
