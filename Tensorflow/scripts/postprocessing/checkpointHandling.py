@@ -21,16 +21,21 @@ def copyCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
 
         ckptFilePaths = [el.path for el in dirContents if el.is_file() and el.name.split("-")[0] == "ckpt"] 
 
-        if ckptFilePaths:
+        if len(ckptFilePaths)>=4:
             # Get number of latest checkpoint
             ckptNumbers = [int(os.path.split(el)[1].split(".")[0].split("-")[1]) for el in ckptFilePaths]
             latestCkptNum = max(ckptNumbers)
 
-            # Move over all checkpoint related files
-            for ckptFile in ckptFilePaths:
-                ckptFileName = os.path.split(ckptFile)[1]
-                print("copying file " + ckptFile)
-                copyfile(ckptFile,os.path.join(destPath, ckptFileName))
+            # Move over the files of the oldest checkpoint
+            ckptNumbers = list(set(ckptNumbers))
+            ckptNumbers.sort()
+
+            for f in ckptFilePaths:
+                if str(ckptNumbers[0]) in os.path.split(f)[1].split(".")[0]:
+                    fileName = os.path.split(f)[1]
+                    print("moving file " + fileName)
+                    os.rename(f, os.path.join(destPath, fileName))
+           
 
             # Break if the last checkpoint has been moved
             if latestCkptNum >= lastCheckpoint:
@@ -102,6 +107,6 @@ if __name__ == "__main__":
     lastCheckpoint = 21
     maxRunTime = 120
 
-    moveCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
+    copyCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
     #copyCheckpontFilesForEvaluation(destPath, ckptBufferTarget, evalpath, 30)
     #saveCheckpointDataToCloud(destPath, ckptTartPath)
