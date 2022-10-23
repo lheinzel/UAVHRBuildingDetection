@@ -29,10 +29,12 @@ def moveCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
             # Move over all checkpoint related files
             for ckptFile in ckptFilePaths:
                 ckptFileName = os.path.split(ckptFile)[1]
+                print("Moving file " + ckptFile)
                 os.rename(ckptFile,os.path.join(destPath, ckptFileName))
 
             # Break if the last checkpoint has been moved
             if latestCkptNum >= lastCheckpoint:
+                print("Latest checkpoint moved. Quitting ...")
                 break;
 
         # Update elabsed time
@@ -100,6 +102,6 @@ if __name__ == "__main__":
     lastCheckpoint = 21
     maxRunTime = 120
 
-    #moveCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
+    moveCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
     #copyCheckpontFilesForEvaluation(destPath, ckptBufferTarget, evalpath, 30)
-    saveCheckpointDataToCloud(destPath, ckptTartPath)
+    #saveCheckpointDataToCloud(destPath, ckptTartPath)
