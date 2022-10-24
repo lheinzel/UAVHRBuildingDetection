@@ -16,12 +16,13 @@ def copyCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
 
     elapsedTime = time.time()
 
-    while (elapsedTime-startTime < maxRunTime)/60:
+    while (elapsedTime-startTime)/60 < maxRunTime:
         # Read names of all checkpoint related files
         dirContents = os.scandir(modelPath)
 
         ckptFilePaths = [el.path for el in dirContents if el.is_file() and el.name.split("-")[0] == "ckpt"] 
 
+        # make sure that only fully built files are moved
         if len(ckptFilePaths)>=4:
             # Get number of latest checkpoint
             ckptNumbers = [int(os.path.split(el)[1].split(".")[0].split("-")[1]) for el in ckptFilePaths]
@@ -38,13 +39,22 @@ def copyCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
                     os.rename(f, os.path.join(destPath, fileName))
            
 
-            # Break if the last checkpoint has been moved
+            # Break if the last checkpoint is present
             if latestCkptNum >= lastCheckpoint:
-                print("Latest checkpoint copied. Quitting ...")
                 break;
 
         # Update elabsed time
         elapsedTime = time.time();
+
+    # Move remaining checkpoint related files
+    dirContents = os.scandir(modelPath)
+    for el in dirContents:
+        if el.is_file() and ("ckpt" in el.name or "checkpoint" in el.name):
+            print("moving file " + el.name)
+            os.rename(el.path, os.path.join(destPath, el.name))
+
+    print("Latest checkpoint copied. Quitting ...")
+    
 
 def copyCheckpontFilesForEvaluation(ckptSourcePath, ckptTargetPath, evalPath, maxRunTime):
     startTime = time.time()
