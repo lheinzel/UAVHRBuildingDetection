@@ -68,6 +68,10 @@ def copyCheckpontFilesForEvaluation(ckptSourcePath, ckptTargetPath, evalPath, ma
     ckptIndices = getCheckpointIndices(ckptSourcePath)
     ckptIndices.sort()
 
+    # Copy the base checkpoint index file
+    if "checkpoint" in ckptFiles:
+        copyfile(os.path.join(ckptSourcePath,"checkpoint"),os.path.join(ckptTargetPath, "checkpoint"))
+
     # Copy files of first checkpoint
     copyCheckpointFilesForIndex(ckptFiles, ckptSourcePath, ckptIndices.pop(0), ckptTargetPath)
 
@@ -88,7 +92,7 @@ def copyCheckpontFilesForEvaluation(ckptSourcePath, ckptTargetPath, evalPath, ma
 
 def getCheckpointIndices(ckptSourcePath):
     ckptFiles = os.listdir(ckptSourcePath)
-    ckptFileNums = [int(el.split(".")[0].split("-")[1]) for el in ckptFiles]
+    ckptFileNums = [int(el.split(".")[0].split("-")[1]) for el in ckptFiles if "ckpt" in el]
     ckptIndizes = list(set(ckptFileNums))
     return ckptIndizes
 
