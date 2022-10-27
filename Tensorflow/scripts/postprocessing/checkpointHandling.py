@@ -112,6 +112,46 @@ def saveCheckpointDataToCloud(ckptPath, ckptTarPath):
         with tarfile.open(ckptTarPath, "w:gz") as tar:
             tar.add(ckptPath, arcname=os.path.basename(ckptPath))
 
+
+def setCheckpointPointerInteratively(checkpointPath, evalPath, maxRunTime):
+    startTime = time.time()
+    ckptPointerFilePath = os.path.join(checkpointPath, "checkpoint")
+
+    # remove existing pointer file if exists
+    if os.path.exists(ckptPointerFilePath):
+        print("... delete old pointer file")
+        os.remove(ckptPointerFilePath)
+
+    # Get all checkpoint files and the indizes
+    ckptFiles = os.listdir(checkpointPath)
+    ckptIndices = getCheckpointIndices(checkpointPath)
+    ckptIndices.sort()
+
+    # Set initial pointer to first checkpoint
+    setCheckpointPointer(ckptPointerFilePath, ckptIndices.pop(0))
+
+    # read elapsed time and number of created evaluation files
+    elapsedTime = time.time()
+    numEvalFilesPrev = len(os.listdir(evalPath))
+
+    while (elapsedTime-startTime)/60 < maxRunTime and ckptIndices:
+        numEvalFilesCur = len(os.listdir(evalPath))
+
+        # Set pointer to next checkpoint if previous one has been read
+        if numEvalFilesCur >= numEvalFilesPrev + 2:
+            setCheckpointPointer(ckptPointerFilePath, ckptIndices.pop(0))
+            numEvalFilesPrev = numEvalFilesCur;
+
+        elapsedTime = time.time()
+
+def setCheckpointPointer(ckptPointerFilePath, index):
+    print("... Setting pointer to " + "\"ckpt-" + str(index) + "\"")
+    pointerFile = open(ckptPointerFilePath, "w")
+    pointerFile.write("model_checkpoint_path: \" ckpt-" + str(index) + "\"")
+    pointerFile.close()
+
+
+
 if __name__ == "__main__":
     modelPath = r"Tensorflow/workspace/training_SSD-MobnetV2_320x320_MoreAugments/models/HRDetection_MobNetV2";
     destPath = r"Tensorflow/workspace/training_SSD-MobnetV2_320x320_MoreAugments/models/HRDetection_MobNetV2/checkpoints"
@@ -121,6 +161,8 @@ if __name__ == "__main__":
     lastCheckpoint = 21
     maxRunTime = 120
 
-    copyCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
+    #copyCheckpointFilesToFolder(modelPath, destPath, lastCheckpoint, maxRunTime)
     #copyCheckpontFilesForEvaluation(destPath, ckptBufferTarget, evalpath, 30)
     #saveCheckpointDataToCloud(destPath, ckptTartPath)
+
+    setCheckpointPointerInteratively(destPath, evalpath, maxRunTime)
