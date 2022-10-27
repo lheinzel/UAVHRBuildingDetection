@@ -138,7 +138,7 @@ def setCheckpointPointerInteratively(checkpointPath, evalPath, maxRunTime):
         numEvalFilesCur = len(os.listdir(evalPath))
 
         # Set pointer to next checkpoint if previous one has been read
-        if numEvalFilesCur >= numEvalFilesPrev + 2:
+        if numEvalFilesCur >= numEvalFilesPrev + 1:
             setCheckpointPointer(ckptPointerFilePath, ckptIndices.pop(0))
             numEvalFilesPrev = numEvalFilesCur;
 
