@@ -147,7 +147,7 @@ def setCheckpointPointerInteratively(checkpointPath, evalPath, maxRunTime):
 def setCheckpointPointer(ckptPointerFilePath, index):
     print("... Setting pointer to " + "\"ckpt-" + str(index) + "\"")
     pointerFile = open(ckptPointerFilePath, "w")
-    pointerFile.write("model_checkpoint_path: \" ckpt-" + str(index) + "\"")
+    pointerFile.write("model_checkpoint_path: \"ckpt-" + str(index) + "\"")
     pointerFile.close()
 
 
