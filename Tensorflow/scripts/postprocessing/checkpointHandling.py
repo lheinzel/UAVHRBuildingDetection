@@ -92,7 +92,7 @@ def copyCheckpontFilesForEvaluation(ckptSourcePath, ckptTargetPath, evalPath, ma
 
 def getCheckpointIndices(ckptSourcePath):
     ckptFiles = os.listdir(ckptSourcePath)
-    ckptFileNums = [int(el.split(".")[0].split("-")[1]) for el in ckptFiles if "ckpt" in el]
+    ckptFileNums = [int(el.split(".")[0].split("-")[1]) for el in ckptFiles if "ckpt-" in el]
     ckptIndizes = list(set(ckptFileNums))
     return ckptIndizes
 
