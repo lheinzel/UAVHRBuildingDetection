@@ -33,9 +33,9 @@ if not os.path.exists(destPath) or os.listdir(destPath) == []:
 
   bboxParams = alb.BboxParams(format='pascal_voc', min_visibility=0.75)
   oAugmenter = alb.Compose([alb.RandomCrop(INPUT_DIMS[0],INPUT_DIMS[1]),
-                          alb.Affine(shear=[-2.5,2.5], rotate=[-2.5 ,2.5], fit_output=True, p=0.5), 
-                          alb.Resize(INPUT_DIMS[0]+50,INPUT_DIMS[1]+50),
-                          alb.CenterCrop(INPUT_DIMS[0],INPUT_DIMS[1]),
+                          #alb.Affine(shear=[-2.5,2.5], rotate=[-2.5 ,2.5], fit_output=True, p=0.5), 
+                          #alb.Resize(INPUT_DIMS[0]+50,INPUT_DIMS[1]+50),
+                          #alb.CenterCrop(INPUT_DIMS[0],INPUT_DIMS[1]),
                           alb.ColorJitter(hue=0.1, brightness=0.5, saturation=0.5, p=0.5),
                           alb.HorizontalFlip(p=0.25),
                           alb.VerticalFlip(p=0.25)], bboxParams)
