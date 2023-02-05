@@ -40,8 +40,9 @@ if not os.path.exists(destPath) or os.listdir(destPath) == []:
                           alb.HorizontalFlip(p=0.25),
                           alb.VerticalFlip(p=0.25)], bboxParams)
 
-  # Augment Test data
-  augmentData(oAugmenter, testPath, testPath, testPath, nAugmentations, "png")
+  # For the test data: only crop the oversize images randomply
+  augmentData(alb.Compose([alb.RandomCrop(INPUT_DIMS[0],INPUT_DIMS[1])],bboxParams),
+              testPath, testPath, testPath, 1, "png");
 
   # Augment Train data
   augmentData(oAugmenter, trainPath, trainPath, trainPath, nAugmentations, "png")
