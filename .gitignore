@@ -2,4 +2,6 @@
 /Datasets/*
 /cocoapi/*
 /Tensorflow/models/*
+/Tensorflow/workspace/images/*
+*.pyc
 
