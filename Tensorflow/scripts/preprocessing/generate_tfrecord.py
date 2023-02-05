@@ -59,6 +59,12 @@ args = parser.parse_args()
 if args.image_dir is None:
     args.image_dir = args.xml_dir
 
+# For testing purposes
+#args.xml_dir = r"Tensorflow\workspace\images\test"
+#args.labels_path = r"Tensorflow\workspace\annotations\labelmap.pbtxt"
+#args.output_path = r"Tensorflow\workspace\annotations\test.record"
+#args.image_dir = r"Tensorflow\workspace\images\test"
+
 
 label_map = label_map_util.load_labelmap(args.labels_path)
 label_map_dict = label_map_util.get_label_map_dict(label_map)
@@ -142,7 +148,8 @@ def gatherAnnotations(labelDirectory):
         elif element.name.split(".")[1] == "csv":
             annotationData = pd.read_csv(element.path, delimiter=";")
             dataFrameLabel = pd.concat([dataFrameLabel, annotationData])
-    
+
+
     return dataFrameLabel
 
 
@@ -174,12 +181,15 @@ def create_tf_example(group, path):
     classes = []
 
     for index, row in group.object.iterrows():
-        xmins.append(row['xmin'] / width)
-        xmaxs.append(row['xmax'] / width)
-        ymins.append(row['ymin'] / height)
-        ymaxs.append(row['ymax'] / height)
-        classes_text.append(row['class'].encode('utf8'))
-        classes.append(class_text_to_int(row['class']))
+        if row['class'] != "Dummy":
+            xmins.append(row['xmin'] / width)
+            xmaxs.append(row['xmax'] / width)
+            ymins.append(row['ymin'] / height)
+            ymaxs.append(row['ymax'] / height)
+            classes_text.append(str(row['class']).encode('utf8'))
+            classes.append(class_text_to_int(row['class']))
+        else:
+            pass
 
     tf_example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': dataset_util.int64_feature(height),
@@ -207,6 +217,10 @@ def main(_):
     examples = gatherAnnotations(args.xml_dir)
 
     grouped = split(examples, 'filename')
+    fls = set(examples["filename"])
+
+    print("Number of files in current partition: " + str(len(fls)))
+  
     for group in grouped:
         tf_example = create_tf_example(group, path)
         writer.write(tf_example.SerializeToString())

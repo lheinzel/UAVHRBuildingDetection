@@ -4,7 +4,7 @@ import cv2
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-
+import numpy as np
 
 BOX_COLOR = (255, 0, 0) # Red
 TEXT_COLOR = (255, 255, 255) # White
@@ -50,6 +50,12 @@ def visualize(image, bboxes):
 def readAnnotationData(lblPath):
     dfLblData = pd.read_csv(lblPath, sep=";")
     listAnnotation = dfLblData[['xmin' , 'ymin', 'xmax', 'ymax', 'class']].values.tolist()
+
+    # Determine if the image is a negative example i.e, that the label file does only contain a dummy label with NaN values
+    if len(listAnnotation) == 1 and np.isnan(listAnnotation[0][:3]).any():
+        # set annotation list empty if only a dummy label is contained
+        listAnnotation = [];
+
     return listAnnotation
 
 
@@ -57,7 +63,7 @@ def transformData(oAugmenter, oImage, lAnnotation, nAugments):
     dataTransformed = [];
 
     for i in range(nAugments):
-        dataTransCur = oAugmenter(image=oImage, bboxes=lAnnotation)
+        dataTransCur = oAugmenter(image=oImage, bboxes=lAnnotation.copy())
         dataTransformed.append(dataTransCur)
 
     return dataTransformed
@@ -69,7 +75,7 @@ def saveAugmentedData(dataTransformed, targetDir, srcImageName):
     # Create datafames for all cropped data
     for ind, dat in enumerate(dataTransformed):
         # Prepare dataframe for labels
-        dfAnnotations = pd.DataFrame(columns=cols, index=range(len(dat["bboxes"])))
+        dfAnnotations = pd.DataFrame(columns=cols, index=range(max(1,len(dat["bboxes"]))))
 
         imgNameCur = srcImageName + "_" + str(ind) + ".png"
         lblNameCur = srcImageName + "_" + str(ind) + ".csv"
@@ -80,10 +86,13 @@ def saveAugmentedData(dataTransformed, targetDir, srcImageName):
 
         if dat["bboxes"]:
             dfAnnotations[["xmin", "ymin", "xmax", "ymax", "class"]] = dat["bboxes"]
-        pass
-
-        # Transform bbox dimensions to int
-        dfAnnotations[["xmin", "ymin", "xmax", "ymax"]] = dfAnnotations[["xmin", "ymin", "xmax", "ymax"]].astype(int)
+            # Transform bbox dimensions to int
+            dfAnnotations[["xmin", "ymin", "xmax", "ymax"]] = dfAnnotations[["xmin", "ymin", "xmax", "ymax"]].astype(int)
+        else:
+            # Create dummy label for augmented negative examples
+            dfAnnotations[["xmin", "ymin", "xmax", "ymax"]] = [-1, -1, -1, -1]
+            dfAnnotations["class"] = ["Dummy"]
+            pass
 
         # Write Annotation data
         dfAnnotations.to_csv(os.path.join(targetDir, lblNameCur), sep=";", index=None)
@@ -95,7 +104,8 @@ def saveAugmentedData(dataTransformed, targetDir, srcImageName):
 
 
 def augmentData(oAugmenter, imgDir, lblDir, targetDir, nAugments, imgFileExt, bVisualize=False):
-    for el in os.scandir(imgDir):
+    imgData = os.scandir(imgDir);
+    for el in imgData:
         if el.is_file() and el.name.split(".")[1] == imgFileExt:
             lblPath = os.path.join(lblDir, os.path.join(el.name.split(".")[0] + ".csv"))
 
@@ -110,7 +120,6 @@ def augmentData(oAugmenter, imgDir, lblDir, targetDir, nAugments, imgFileExt, bV
                 for dat in dataTrans:
                     if dat["bboxes"]:
                         visualize(dat["image"], dat["bboxes"])
-                        pass
 
             # Save the transformed data
             saveAugmentedData(dataTrans, targetDir, el.name.split(".")[0])

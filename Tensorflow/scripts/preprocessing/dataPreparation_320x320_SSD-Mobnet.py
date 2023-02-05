@@ -20,6 +20,9 @@ INPUT_DIMS = [320,320];
 
 # Copy labelmap from dataset
 if not os.path.exists(lblMapPath):
+  if not os.path.exists(os.path.dirname(lblMapPath)):
+    os.mkdir(os.path.dirname(lblMapPath))
+
   copyfile(lblMapSrcPath, lblMapPath);
 
 # Partiion the dataset
@@ -41,14 +44,17 @@ if not os.path.exists(destPath) or os.listdir(destPath) == []:
                           alb.VerticalFlip(p=0.25)], bboxParams)
 
   # For the test data: only crop the oversize images randomply
+  print("Creating test partition....")
   augmentData(alb.Compose([alb.RandomCrop(INPUT_DIMS[0],INPUT_DIMS[1])],bboxParams),
               testPath, testPath, testPath, 1, "png");
 
   # Augment Train data
+  print("augmenting training partition...")
   augmentData(oAugmenter, trainPath, trainPath, trainPath, nAugmentations, "png")
 
   # Augment Validation data
   if os.path.exists(validPath):
+    print("augmenting validation partition...")
     augmentData(oAugmenter, validPath, validPath, validPath, nAugmentations, "png")
 
 
